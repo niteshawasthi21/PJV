@@ -1,0 +1,19 @@
+.mat-mdc-snack-bar-container.snack-success {
+    --mdc-snackbar-container-color: #C8E6C9 !important; /* Light green */
+    color: #256029 !important;
+}
+
+.mat-mdc-snack-bar-container.snack-error {
+    --mdc-snackbar-container-color: #FFCDD2 !important; /* Light red */
+    color: #C62828 !important;
+}
+
+.mat-mdc-snack-bar-container.snack-warning {
+    --mdc-snackbar-container-color: #FFE0B2 !important; /* Light orange */
+    color: #7f5100 !important;
+}
+
+.mat-mdc-snack-bar-container.snack-info {
+    --mdc-snackbar-container-color: #BBDEFB !important; /* Light blue */
+    color: #0d47a1 !important;
+}

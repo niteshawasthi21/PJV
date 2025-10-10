@@ -1,1 +1,22 @@
-<p>header works!</p>
+
+<mat-toolbar color="primary" class="header-toolbar" style="justify-content: space-between;">
+  <!-- Left: Logo -->
+  <div class="header-logo">
+    <img src="PJV.png" alt="Logo" height="40">
+  </div>
+
+  <!-- Right: Profile/Cart or Login/Register -->
+  <div class="header-icons d-flex align-items-center">
+    @if (isLoggedIn) {
+      <button mat-icon-button aria-label="Profile" class="me-2">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+    } @else {
+      <button mat-stroked-button color="accent" class="me-2" routerLink="/login">Login</button>
+      <button mat-flat-button color="accent" routerLink="/register">Register</button>
+    }
+    <button mat-icon-button aria-label="Cart">
+      <mat-icon>shopping_cart</mat-icon>
+    </button>
+  </div>
+</mat-toolbar>

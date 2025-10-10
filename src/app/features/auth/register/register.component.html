@@ -1,1 +1,84 @@
-<p>register works!</p>
+<mat-card class="register-card">
+  <h2 class="title">Create an Account</h2>
+
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+    <!-- Full Name -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Full Name</mat-label>
+      <input matInput formControlName="fullName" />
+
+      @if (f['fullName'].hasError('required')) {
+        <mat-error>Name is required</mat-error>
+      } @else if (f['fullName'].hasError('minlength')) {
+        <mat-error>Minimum 3 characters required</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Email -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email" />
+
+      @if (f['email'].hasError('required')) {
+        <mat-error>Email is required</mat-error>
+      } @else if (f['email'].hasError('email')) {
+        <mat-error>Enter a valid email</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Password -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Password</mat-label>
+      <input
+        matInput
+        [type]="hidePassword ? 'password' : 'text'"
+        formControlName="password"
+      />
+      <button
+        type="button"
+        mat-icon-button
+        matSuffix
+        (click)="hidePassword = !hidePassword"
+      >
+        <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+
+      @if (f['password'].hasError('required')) {
+        <mat-error>Password is required</mat-error>
+      } @else if (f['password'].hasError('minlength')) {
+        <mat-error>Minimum 6 characters required</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Confirm Password -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Confirm Password</mat-label>
+      <input
+        matInput
+        [type]="hideConfirmPassword ? 'password' : 'text'"
+        formControlName="confirmPassword"
+      />
+      <button
+        type="button"
+        mat-icon-button
+        matSuffix
+        (click)="hideConfirmPassword = !hideConfirmPassword"
+      >
+        <mat-icon>
+          {{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}
+        </mat-icon>
+      </button>
+
+      @if (f['confirmPassword'].hasError('required')) {
+        <mat-error>Please confirm your password</mat-error>
+      } @else if (registerForm.hasError('passwordMismatch')) {
+        <mat-error>Passwords do not match</mat-error>
+      }
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" class="submit-btn" type="submit"
+    [disabled]="registerForm.invalid">
+      Register
+    </button>
+  </form>
+</mat-card>

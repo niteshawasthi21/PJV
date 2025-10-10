@@ -1,1 +1,49 @@
-<p>login works!</p>
+<mat-card class="login-card">
+  <h2 class="title">Welcome Back 👋</h2>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <!-- Email Field -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email" />
+
+      @if (f['email'].hasError('required')) {
+        <mat-error>Email is required</mat-error>
+      } @else if (f['email'].hasError('email')) {
+        <mat-error>Enter a valid email</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Password Field -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Password</mat-label>
+      <input
+        matInput
+        [type]="hidePassword ? 'password' : 'text'"
+        formControlName="password"
+      />
+      <button
+        type="button"
+        mat-icon-button
+        matSuffix
+        (click)="hidePassword = !hidePassword"
+      >
+        <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+
+      @if (f['password'].hasError('required')) {
+        <mat-error>Password is required</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Submit Button -->
+    <button mat-flat-button color="primary" class="submit-btn" type="submit">
+      Login
+    </button>
+
+    <div class="extra-links">
+      <a routerLink="/register">Create Account</a>
+      <a routerLink="/forgot-password">Forgot Password?</a>
+    </div>
+  </form>
+</mat-card>

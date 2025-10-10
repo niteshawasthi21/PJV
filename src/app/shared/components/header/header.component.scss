@@ -1,0 +1,126 @@
+// Angular Material header styles
+// Custom theme color
+$theme-orange: #ed913b;
+
+
+.header-toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 1.5rem;
+	min-height: 68px;
+	background: $theme-orange !important;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+
+	.header-logo img {
+		height: 44px;
+        border-radius: 2em;
+		width: auto;
+		vertical-align: middle;
+		filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));
+	}
+
+
+
+	.header-icons {
+		display: flex;
+		align-items: center;
+		button[mat-icon-button] {
+			background: #fff;
+			color: $theme-orange;
+			margin-left: 0.5rem;
+			border-radius: 50%;
+			box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+			transition: background 0.2s;
+			&:hover {
+				background: lighten($theme-orange, 30%);
+			}
+			mat-icon {
+				color: $theme-orange;
+			}
+		}
+		.me-2 {
+			margin-right: 0.5rem !important;
+		}
+		button[mat-stroked-button], button[mat-flat-button] {
+			border-radius: 20px;
+			font-weight: 500;
+			font-size: 0.97rem;
+			box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+			margin-right: 0.5rem;
+			background: #fff;
+			color: $theme-orange;
+			border-color: $theme-orange;
+			&:hover {
+				background: lighten($theme-orange, 30%);
+			}
+		}
+		button[mat-flat-button] {
+			background: $theme-orange;
+			color: #fff;
+			border: none;
+		}
+	}
+}
+
+// Tablet view
+@media (max-width: 900px) {
+	.header-toolbar {
+		.header-search {
+			margin: 0 0.5rem;
+			max-width: 300px;
+		}
+	}
+}
+
+// Mobile view
+@media (max-width: 600px) {
+	.header-toolbar {
+		flex-direction: column;
+		align-items: stretch;
+		padding: 0.5rem;
+		.header-logo {
+			justify-content: center;
+			margin-bottom: 0.5rem;
+			text-align: center;
+		}
+		.header-search {
+			margin: 0 0 0.5rem 0;
+			max-width: 100%;
+		}
+		.header-icons {
+			justify-content: flex-end;
+		}
+	}
+}
+
+// Tablet view
+@media (max-width: 900px) {
+	.header-toolbar {
+		.header-search {
+			margin: 0 0.5rem;
+			max-width: 300px;
+		}
+	}
+}
+
+// Mobile view
+@media (max-width: 600px) {
+	.header-toolbar {
+		flex-direction: column;
+		align-items: stretch;
+		padding: 0.5rem;
+		.header-logo {
+			justify-content: center;
+			margin-bottom: 0.5rem;
+			text-align: center;
+		}
+		.header-search {
+			margin: 0 0 0.5rem 0;
+			max-width: 100%;
+		}
+		.header-icons {
+			justify-content: flex-end;
+		}
+	}
+}

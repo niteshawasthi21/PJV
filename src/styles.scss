@@ -1,1 +1,103 @@
+@use 'styles/notification';
+
 /* You can add global styles to this file, and also import other style files */
+* {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-decoration: none;
+    color: black;
+    font-weight: normal;
+    font-size: 16px;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: 'Work Sans', sans-serif; }
+
+/* ==========================================================
+   COMMON MATERIAL INPUT FIXES
+   Purpose: Fix blurred or low-contrast input text
+   Author: Nitesh Awasthi
+   Theme: #ed913b
+   ========================================================== */
+
+/* ----------------------------------------------------------
+   1️⃣ Fix Input Text Color
+   - Ensures readable text (especially on light backgrounds)
+----------------------------------------------------------- */
+:root {
+  --mat-sys-on-surface: #222 !important; /* Dark, crisp text */
+  --mdc-outlined-text-field-input-text-color: #222 !important;
+}
+
+/* ----------------------------------------------------------
+   2️⃣ Input Placeholder & Caret
+   - Makes placeholder visible and caret match brand color
+----------------------------------------------------------- */
+.mdc-text-field__input::placeholder {
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.mdc-text-field__input {
+  caret-color: #ed913b !important; /* Orange caret */
+}
+
+/* ----------------------------------------------------------
+   3️⃣ Label Color Adjustments
+   - Prevent label from being too light or fading on blur
+----------------------------------------------------------- */
+.mat-mdc-form-field-label {
+  color: rgba(0, 0, 0, 0.7) !important;
+  font-weight: 400;
+}
+
+.mat-focused .mat-mdc-form-field-label {
+  color: #ed913b !important; /* Active label */
+  font-weight: 500;
+}
+
+/* ----------------------------------------------------------
+   4️⃣ Outline & Focus Border
+   - Set visible focus ring in brand color
+----------------------------------------------------------- */
+.mdc-notched-outline__leading,
+.mdc-notched-outline__notch,
+.mdc-notched-outline__trailing {
+  border-color: rgba(0, 0, 0, 0.25) !important; /* default border */
+}
+
+.mdc-text-field--focused .mdc-notched-outline__leading,
+.mdc-text-field--focused .mdc-notched-outline__notch,
+.mdc-text-field--focused .mdc-notched-outline__trailing {
+  border-color: #ed913b !important; /* focus border color */
+}
+
+/* ----------------------------------------------------------
+   5️⃣ Error & Invalid State
+----------------------------------------------------------- */
+.mdc-text-field--invalid .mdc-notched-outline__leading,
+.mdc-text-field--invalid .mdc-notched-outline__notch,
+.mdc-text-field--invalid .mdc-notched-outline__trailing {
+  border-color: #f44336 !important; /* red for errors */
+}
+
+.mdc-text-field--invalid .mdc-text-field__input {
+  color: #f44336 !important;
+}
+
+/* ----------------------------------------------------------
+   6️⃣ Optional: Dark Background Inputs
+   - Apply this class to a container with dark background
+----------------------------------------------------------- */
+.dark-form .mdc-text-field__input {
+  color: #fff !important;
+}
+
+.dark-form .mat-mdc-form-field-label {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.dark-form .mat-focused .mat-mdc-form-field-label {
+  color: #fff !important;
+}
+

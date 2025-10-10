@@ -1,0 +1,66 @@
+.login-card {
+  width: 400px;
+  margin: 40px auto;
+  padding: 32px 24px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  background: #fff;
+  text-align: center;
+}
+
+.title {
+  color: #ed913b;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+
+.form-field {
+  display: block;
+  width: 100%;
+  margin-bottom: 18px;
+  color: black;
+
+}
+
+.filled-input-text-color {
+    color: black;
+  }
+
+.submit-btn {
+  width: 100%;
+  background-color: #ed913b !important;
+  color: #fff !important;
+  font-weight: 500;
+  padding: 10px 0;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #e07925 !important;
+}
+
+.extra-links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  font-size: 13px;
+
+  a {
+    color: #ed913b;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    width: 90%;
+    margin: 40px auto;
+  }
+}
