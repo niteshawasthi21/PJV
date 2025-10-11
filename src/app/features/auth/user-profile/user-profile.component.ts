@@ -1,0 +1,333 @@
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { NotificationService } from '../../../core/services/dialog/notification.service';
+import { AngularMaterialComponentsModule } from '../../../shared/material/material-components.module';
+
+@Component({
+  selector: 'app-user-profile',
+  imports: [AngularMaterialComponentsModule],
+  templateUrl: './user-profile.component.html',
+  styleUrl: './user-profile.component.scss'
+})
+export class UserProfileComponent {
+
+  profileForm: FormGroup;
+  passwordForm: FormGroup;
+  addressForm: FormGroup;
+  
+  isEditingProfile = false;
+  isEditingPassword = false;
+  isAddingAddress = false;
+  selectedFile: File | null = null;
+  profileImageUrl = 'https://i.pravatar.cc/200?img=12';
+
+  // User Data
+  user = {
+    name: 'Rajesh Kumar',
+    email: 'rajesh.kumar@email.com',
+    phone: '+91 9876543210',
+    joinDate: new Date('2024-01-15'),
+    totalOrders: 24,
+    totalSpent: 45680
+  };
+
+  // Orders History
+  orders: Order[] = [
+    {
+      id: 'ORD-2025-001',
+      date: new Date('2025-10-05'),
+      total: 2599,
+      status: 'Delivered',
+      items: 3
+    },
+    {
+      id: 'ORD-2025-002',
+      date: new Date('2025-09-28'),
+      total: 1899,
+      status: 'Delivered',
+      items: 2
+    },
+    {
+      id: 'ORD-2025-003',
+      date: new Date('2025-09-15'),
+      total: 3499,
+      status: 'Delivered',
+      items: 1
+    },
+    {
+      id: 'ORD-2025-004',
+      date: new Date('2025-08-30'),
+      total: 4599,
+      status: 'Delivered',
+      items: 4
+    },
+    {
+      id: 'ORD-2025-005',
+      date: new Date('2025-08-10'),
+      total: 1299,
+      status: 'Delivered',
+      items: 2
+    }
+  ];
+
+  // Saved Addresses
+  addresses: Address[] = [
+    {
+      id: 1,
+      type: 'Home',
+      name: 'Rajesh Kumar',
+      phone: '+91 9876543210',
+      addressLine1: 'A-123, Green Park Society',
+      addressLine2: 'Near City Mall',
+      city: 'Varanasi',
+      state: 'Uttar Pradesh',
+      pincode: '221001',
+      isDefault: true
+    },
+    {
+      id: 2,
+      type: 'Office',
+      name: 'Rajesh Kumar',
+      phone: '+91 9876543210',
+      addressLine1: 'B-456, Tech Park',
+      addressLine2: 'Sector 5',
+      city: 'Varanasi',
+      state: 'Uttar Pradesh',
+      pincode: '221010',
+      isDefault: false
+    }
+  ];
+
+  // Wishlist Items
+  wishlistItems = [
+    {
+      id: 1,
+      name: 'Classic Cotton T-Shirt',
+      price: 599,
+      image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200',
+      inStock: true
+    },
+    {
+      id: 2,
+      name: 'Denim Jacket',
+      price: 2499,
+      image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=200',
+      inStock: true
+    },
+    {
+      id: 3,
+      name: 'Leather Wallet',
+      price: 899,
+      image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=200',
+      inStock: false
+    }
+  ];
+
+  constructor(
+    private fb: FormBuilder,
+    private notify: NotificationService,
+    private dialog: MatDialog
+  ) {
+    this.profileForm = this.fb.group({
+      name: [this.user.name, Validators.required],
+      email: [this.user.email, [Validators.required, Validators.email]],
+      phone: [this.user.phone, Validators.required]
+    });
+
+    this.passwordForm = this.fb.group({
+      currentPassword: ['', Validators.required],
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required]
+    }, { validators: this.passwordMatchValidator });
+
+    this.addressForm = this.fb.group({
+      type: ['', Validators.required],
+      name: ['', Validators.required],
+      phone: ['', Validators.required],
+      addressLine1: ['', Validators.required],
+      addressLine2: [''],
+      city: ['', Validators.required],
+      state: ['', Validators.required],
+      pincode: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]]
+    });
+  }
+
+  ngOnInit(): void {
+    this.profileForm.disable();
+  }
+
+  passwordMatchValidator(form: FormGroup) {
+    const newPassword = form.get('newPassword');
+    const confirmPassword = form.get('confirmPassword');
+    
+    if (newPassword && confirmPassword && newPassword.value !== confirmPassword.value) {
+      confirmPassword.setErrors({ passwordMismatch: true });
+      return { passwordMismatch: true };
+    }
+    return null;
+  }
+
+  // Profile Image Upload
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.profileImageUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
+      this.showSnackBar('Profile picture updated!');
+    }
+  }
+
+  triggerFileInput() {
+    document.getElementById('fileInput')?.click();
+  }
+
+  // Profile Edit
+  enableProfileEdit() {
+    this.isEditingProfile = true;
+    this.profileForm.enable();
+  }
+
+  cancelProfileEdit() {
+    this.isEditingProfile = false;
+    this.profileForm.patchValue({
+      name: this.user.name,
+      email: this.user.email,
+      phone: this.user.phone
+    });
+    this.profileForm.disable();
+  }
+
+  saveProfile() {
+    if (this.profileForm.valid) {
+      this.user = { ...this.user, ...this.profileForm.value };
+      this.isEditingProfile = false;
+      this.profileForm.disable();
+      this.showSnackBar('Profile updated successfully!');
+    }
+  }
+
+  // Password Change
+  enablePasswordChange() {
+    this.isEditingPassword = true;
+  }
+
+  cancelPasswordChange() {
+    this.isEditingPassword = false;
+    this.passwordForm.reset();
+  }
+
+  changePassword() {
+    if (this.passwordForm.valid) {
+      // API call to change password
+      this.showSnackBar('Password changed successfully!');
+      this.isEditingPassword = false;
+      this.passwordForm.reset();
+    }
+  }
+
+  // Address Management
+  addNewAddress() {
+    this.isAddingAddress = true;
+    this.addressForm.reset();
+  }
+
+  cancelAddAddress() {
+    this.isAddingAddress = false;
+    this.addressForm.reset();
+  }
+
+  saveAddress() {
+    if (this.addressForm.valid) {
+      const newAddress: Address = {
+        id: this.addresses.length + 1,
+        ...this.addressForm.value,
+        isDefault: false
+      };
+      this.addresses.push(newAddress);
+      this.isAddingAddress = false;
+      this.addressForm.reset();
+      this.showSnackBar('Address added successfully!');
+    }
+  }
+
+  setDefaultAddress(address: Address) {
+    this.addresses.forEach(addr => addr.isDefault = false);
+    address.isDefault = true;
+    this.showSnackBar('Default address updated!');
+  }
+
+  deleteAddress(addressId: number) {
+    this.addresses = this.addresses.filter(addr => addr.id !== addressId);
+    this.showSnackBar('Address deleted successfully!');
+  }
+
+  // Order Management
+  viewOrder(order: Order) {
+    console.log('Viewing order:', order);
+    // Navigate to order details page
+  }
+
+  trackOrder(order: Order) {
+    console.log('Tracking order:', order);
+    // Open tracking dialog or navigate to tracking page
+  }
+
+  downloadInvoice(order: Order) {
+    console.log('Downloading invoice for:', order);
+    this.showSnackBar('Invoice downloaded!');
+  }
+
+  getStatusColor(status: string): string {
+    const colors: { [key: string]: string } = {
+      'Delivered': 'primary',
+      'Shipped': 'accent',
+      'Processing': 'warn',
+      'Cancelled': 'basic'
+    };
+    return colors[status] || 'basic';
+  }
+
+  // Wishlist Management
+  removeFromWishlist(itemId: number) {
+    this.wishlistItems = this.wishlistItems.filter(item => item.id !== itemId);
+    this.showSnackBar('Removed from wishlist!');
+  }
+
+  moveToCart(item: any) {
+    console.log('Moving to cart:', item);
+    this.showSnackBar('Item added to cart!');
+  }
+
+  // Utility
+  showSnackBar(message: string) {
+    this.notify.show(message, 'success');
+    return;
+  }
+
+}
+
+export interface Order {
+  id: string;
+  date: Date;
+  total: number;
+  status: string;
+  items: number;
+}
+
+export interface Address {
+  id: number;
+  type: string;
+  name: string;
+  phone: string;
+  addressLine1: string;
+  addressLine2: string;
+  city: string;
+  state: string;
+  pincode: string;
+  isDefault: boolean;
+}

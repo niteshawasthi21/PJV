@@ -20,6 +20,12 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar'; 
 import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatTableModule } from '@angular/material/table';
+import { CommonModule } from '@angular/common';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatChip } from '@angular/material/chips';
+import { MatTab, MatTabsModule } from '@angular/material/tabs';
 
 const angularMaterialComponents = [
   MatToolbarModule,
@@ -41,8 +47,13 @@ const angularMaterialComponents = [
   MatProgressSpinnerModule,
   MatDialogModule,
   MatSnackBarModule,
-  RouterModule,ReactiveFormsModule,
-  
+  MatTableModule,
+  MatProgressBar,
+  MatPaginator,
+  MatChip,MatTabsModule,
+  RouterModule,
+  ReactiveFormsModule,
+  CommonModule
 ];
 
 @NgModule({

@@ -35,6 +35,10 @@
   padding: 10px 0;
   border-radius: 8px;
   transition: background 0.3s ease;
+   &.mat-mdc-button-disabled {
+    background-color: rgba(237, 145, 59, 0.5) !important;
+    color: #fff !important;
+  }
 }
 
 .submit-btn:hover {

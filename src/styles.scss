@@ -101,3 +101,52 @@ body { margin: 0; font-family: 'Work Sans', sans-serif; }
   color: #fff !important;
 }
 
+/* ----------------------------------------------------------
+   7️⃣ Material Button Styles
+   - Ensure all Material buttons have white background
+----------------------------------------------------------- */
+.mat-button,
+.mat-raised-button,
+.mat-flat-button,
+.mat-stroked-button,
+.mat-fab,
+.mat-mini-fab,
+.mat-icon-button,
+.mdc-button,
+.mdc-button--raised,
+.mdc-button--outlined,
+.mdc-button--text {
+  background-color: #fff !important;
+  color: #333 !important;
+  border: 1px solid #ddd !important;
+}
+
+/* Hover state for buttons */
+.mat-button:hover,
+.mat-raised-button:hover,
+.mat-flat-button:hover,
+.mat-stroked-button:hover,
+.mat-fab:hover,
+.mat-mini-fab:hover,
+.mat-icon-button:hover,
+.mdc-button:hover,
+.mdc-button--raised:hover,
+.mdc-button--outlined:hover,
+.mdc-button--text:hover {
+  background-color: #f5f5f5 !important;
+}
+
+/* Focus state for accessibility */
+.mat-button:focus,
+.mat-raised-button:focus,
+.mat-flat-button:focus,
+.mat-stroked-button:focus,
+.mat-fab:focus,
+.mat-mini-fab:focus,
+.mat-icon-button:focus,
+.mdc-button:focus,
+.mdc-button--raised:focus,
+.mdc-button--outlined:focus,
+.mdc-button--text:focus {
+  background-color: #e8e8e8 !important;
+}

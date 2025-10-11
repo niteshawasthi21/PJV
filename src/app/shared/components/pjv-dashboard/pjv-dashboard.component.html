@@ -1,0 +1,155 @@
+<div class="home-container">
+
+  <!-- Hero Section with Slider -->
+  <section class="hero-section">
+    <div class="hero-slider">
+      <div class="slide" *ngFor="let slide of heroSlides; let i = index" 
+           [class.active]="i === currentSlide"
+           [style.background-image]="'url(' + slide.image + ')'">
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          <h1 class="slide-title" data-aos="fade-up">{{ slide.title }}</h1>
+          <p class="slide-subtitle" data-aos="fade-up" data-aos-delay="100">{{ slide.subtitle }}</p>
+          <button mat-raised-button color="primary" class="hero-button" data-aos="fade-up" data-aos-delay="200">
+            {{ slide.buttonText }}
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Slider Controls -->
+    <button mat-icon-button class="slider-control prev" (click)="prevSlide()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button mat-icon-button class="slider-control next" (click)="nextSlide()">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    
+    <!-- Slider Indicators -->
+    <div class="slider-indicators">
+      <button *ngFor="let slide of heroSlides; let i = index" 
+              class="indicator" 
+              [class.active]="i === currentSlide"
+              (click)="goToSlide(i)">
+      </button>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <div class="features-container">
+      <div class="feature-card" *ngFor="let feature of features">
+        <mat-icon class="feature-icon">{{ feature.icon }}</mat-icon>
+        <h3>{{ feature.title }}</h3>
+        <p>{{ feature.description }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Shop by Category -->
+  <section class="categories-section">
+    <div class="section-header">
+      <h2>Shop by Category</h2>
+      <p>Explore our diverse collection</p>
+    </div>
+    <div class="categories-grid">
+      <div class="category-card" *ngFor="let category of categories" (click)="navigateToCategory(category.route)">
+        <div class="category-image" [style.background-image]="'url(' + category.image + ')'">
+          <div class="category-overlay">
+            <h3>{{ category.name }}</h3>
+            <button mat-button>
+              Explore
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products -->
+  <section class="products-section">
+    <div class="section-header">
+      <h2>Featured Products</h2>
+      <p>Handpicked items just for you</p>
+    </div>
+    <div class="products-grid">
+      <mat-card class="product-card" *ngFor="let product of featuredProducts">
+        <div class="product-image-container" (click)="viewProduct(product)">
+          <img mat-card-image [src]="product.image" [alt]="product.name">
+          <div class="product-badges">
+            <mat-chip *ngIf="product.isNew" class="new-badge">NEW</mat-chip>
+            <mat-chip *ngIf="product.discount" class="discount-badge">-{{ product.discount }}%</mat-chip>
+          </div>
+          <div class="product-overlay">
+            <button mat-mini-fab color="primary" (click)="addToCart(product); $event.stopPropagation()">
+              <mat-icon>shopping_cart</mat-icon>
+            </button>
+            <button mat-mini-fab (click)="addToWishlist(product); $event.stopPropagation()">
+              <mat-icon>favorite_border</mat-icon>
+            </button>
+          </div>
+        </div>
+        <mat-card-content>
+          <p class="product-category">{{ product.category }}</p>
+          <h3 class="product-name">{{ product.name }}</h3>
+          <div class="product-price">
+            <span class="current-price">₹{{ product.price }}</span>
+            <span class="original-price" *ngIf="product.originalPrice">₹{{ product.originalPrice }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    <div class="view-all-container">
+      <button mat-raised-button color="primary" class="view-all-button">
+        View All Products
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials-section">
+    <div class="section-header">
+      <h2>What Our Customers Say</h2>
+      <p>Real reviews from real customers</p>
+    </div>
+    <div class="testimonials-grid">
+      <mat-card class="testimonial-card" *ngFor="let testimonial of testimonials">
+        <mat-card-content>
+          <div class="testimonial-header">
+            <img [src]="testimonial.image" [alt]="testimonial.name" class="testimonial-avatar">
+            <div>
+              <h4>{{ testimonial.name }}</h4>
+              <div class="rating">
+                <mat-icon *ngFor="let star of getStarArray(testimonial.rating)" class="star">star</mat-icon>
+              </div>
+            </div>
+          </div>
+          <p class="testimonial-comment">"{{ testimonial.comment }}"</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </section>
+
+  <!-- Newsletter Section -->
+  <section class="newsletter-section">
+    <div class="newsletter-content">
+      <mat-icon class="newsletter-icon">mail</mat-icon>
+      <h2>Subscribe to Our Newsletter</h2>
+      <p>Get the latest updates on new arrivals and special offers</p>
+      <div class="newsletter-form">
+        <mat-form-field appearance="outline" class="newsletter-input">
+          <mat-icon matPrefix>email</mat-icon>
+          <input matInput placeholder="Enter your email" type="email">
+        </mat-form-field>
+        <button mat-raised-button color="primary" class="subscribe-button">
+          Subscribe
+          <mat-icon>send</mat-icon>
+        </button>
+      </div>
+    </div>
+  </section>
+
+</div>

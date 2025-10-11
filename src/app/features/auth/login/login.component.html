@@ -37,7 +37,8 @@
     </mat-form-field>
 
     <!-- Submit Button -->
-    <button mat-flat-button color="primary" class="submit-btn" type="submit">
+    <button mat-flat-button color="primary" class="submit-btn" type="submit"
+    [disabled]="loginForm.invalid">
       Login
     </button>
 
