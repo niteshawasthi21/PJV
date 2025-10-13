@@ -1,20 +1,39 @@
-
 <mat-toolbar color="primary" class="header-toolbar" style="justify-content: space-between;">
   <!-- Left: Logo -->
   <div class="header-logo" routerLink="/dashboard" style="cursor: pointer;">
-    <img src="PJV.png" alt="Logo" height="40">
+    <img src="/PJV.png" alt="Logo" height="40" />
   </div>
 
-  <!-- Right: Profile/Cart or Login/Register -->
+  <!-- Right: Actions -->
   <div class="header-icons d-flex align-items-center">
+
+    <!-- Logged-in State -->
     @if (isLoggedIn) {
-      <button mat-icon-button aria-label="Profile" class="me-2">
+    <button mat-icon-button [matTooltip]="userName" routerLink="/profile" class="me-2 avatar-button">
+      <img
+  *ngIf="userAvatar"
+  [src]="userAvatar"
+  (error)="userAvatar = '/PJV.png'"
+  alt="User Avatar"
+  class="user-avatar"
+/>
+      <ng-template #defaultIcon>
         <mat-icon>account_circle</mat-icon>
-      </button>
-    } @else {
-      <button mat-stroked-button color="accent" class="me-2" routerLink="/login">Login</button>
-      <button mat-flat-button color="accent" routerLink="/register">Register</button>
+      </ng-template>
+    </button>
+
+    <!-- ✅ Logout button -->
+    <button mat-stroked-button color="warn" (click)="logout()">
+      <mat-icon>logout</mat-icon> Logout
+    </button>
     }
+
+    <!-- Logged-out State -->
+    @else {
+    <button mat-stroked-button color="accent" class="me-2" routerLink="/login">Login</button>
+    <button mat-flat-button color="accent" routerLink="/register">Register</button>
+    }
+
     <button mat-icon-button aria-label="Cart">
       <mat-icon>shopping_cart</mat-icon>
     </button>

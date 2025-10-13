@@ -26,6 +26,7 @@ import { MatProgressBar } from '@angular/material/progress-bar';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatChip } from '@angular/material/chips';
 import { MatTab, MatTabsModule } from '@angular/material/tabs';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 const angularMaterialComponents = [
   MatToolbarModule,
@@ -53,7 +54,7 @@ const angularMaterialComponents = [
   MatChip,MatTabsModule,
   RouterModule,
   ReactiveFormsModule,
-  CommonModule
+  CommonModule,MatCheckboxModule
 ];
 
 @NgModule({

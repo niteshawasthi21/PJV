@@ -3,7 +3,7 @@
   margin: 40px auto;
   padding: 32px 24px;
   border-radius: 16px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
   background: #fff;
   text-align: center;
 }
@@ -14,57 +14,172 @@
   margin-bottom: 24px;
 }
 
+.subtitle {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 32px;
+  font-weight: 400;
+}
 
 .form-field {
   display: block;
   width: 100%;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   color: black;
-
 }
 
 .filled-input-text-color {
-    color: black;
+  color: black;
+}
+
+.remember-me-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 24px;
+  
+  .remember-me-checkbox {
+    font-size: 14px;
+    color: #666;
   }
+}
 
 .submit-btn {
   width: 100%;
   background-color: #ed913b !important;
   color: #fff !important;
-  font-weight: 500;
-  padding: 10px 0;
+  font-weight: 600;
+  padding: 12px 0;
   border-radius: 8px;
-  transition: background 0.3s ease;
-   &.mat-mdc-button-disabled {
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  
+  &.mat-mdc-button-disabled {
     background-color: rgba(237, 145, 59, 0.5) !important;
     color: #fff !important;
   }
+  
+  .spinner {
+    margin-right: 8px;
+  }
+  
+  .loading-text {
+    font-size: 14px;
+  }
 }
 
-.submit-btn:hover {
+.submit-btn:hover:not(.mat-mdc-button-disabled) {
   background-color: #e07925 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(237, 145, 59, 0.3);
 }
 
 .extra-links {
   display: flex;
-  justify-content: space-between;
-  margin-top: 16px;
-  font-size: 13px;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+  font-size: 14px;
 
-  a {
+  .register-link,
+  .forgot-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     color: #ed913b;
     text-decoration: none;
     font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
 
     &:hover {
-      text-decoration: underline;
+      background-color: rgba(237, 145, 59, 0.1);
+      transform: translateY(-1px);
     }
   }
+}
+
+.demo-credentials {
+  margin-top: 32px;
+  padding-top: 24px;
+  
+  .demo-text {
+    font-size: 12px;
+    color: #888;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  
+  .demo-info {
+    font-size: 11px;
+    color: #aaa;
+    font-family: 'Courier New', monospace;
+    background-color: #f5f5f5;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 0;
+  }
+}
+
+// Error state improvements
+.mat-mdc-form-field.mat-form-field-invalid {
+  .mat-mdc-text-field-wrapper {
+    border-color: #f44336;
+  }
+}
+
+// Loading state for form fields
+.form-field.loading {
+  pointer-events: none;
+  opacity: 0.7;
 }
 
 @media (max-width: 480px) {
   .login-card {
     width: 90%;
-    margin: 40px auto;
+    margin: 20px auto;
+    padding: 24px 16px;
   }
+  
+  .title {
+    font-size: 24px;
+  }
+  
+  .extra-links {
+    .register-link,
+    .forgot-link {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+  }
+}
+
+// Focus improvements
+.mat-mdc-form-field:focus-within {
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: #ed913b !important;
+  }
+}
+
+// Animation for form submission
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.submit-btn:active {
+  animation: pulse 0.2s ease-in-out;
 }

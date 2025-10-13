@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { RegisterComponent } from './features/auth/register/register.component';
 import { LoginComponent } from './features/auth/login/login.component';
 import { PjvDashboardComponent } from './shared/components/pjv-dashboard/pjv-dashboard.component';
+import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -10,6 +11,7 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { 
         path: 'profile', 
-        loadComponent: () => import('./features/auth/user-profile/user-profile.component').then(m => m.UserProfileComponent)
+        loadComponent: () => import('./features/auth/user-profile/user-profile.component').then(m => m.UserProfileComponent),
+        canActivate: [AuthGuard]
     }
 ];
