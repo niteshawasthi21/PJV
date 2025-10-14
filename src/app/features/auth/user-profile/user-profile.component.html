@@ -18,7 +18,7 @@
             <p class="email">{{ user.email }}</p>
             <p class="join-date">
               <mat-icon>event</mat-icon>
-              Member since {{ user.joinDate | date:'dd MMMM yyyy' }}
+              Member since {{ user.joinDate | date }}
             </p>
           </div>
           <div class="profile-stats">
@@ -37,7 +37,7 @@
     </div>
   
     <!-- Tabs Section -->
-   @if(false){
+   @if(true){
     <mat-tab-group  class="profile-tabs" animationDuration="300ms">
       
         <!-- Personal Information Tab -->
@@ -96,13 +96,7 @@
               </button>
             </mat-card-header>
             <mat-card-content *ngIf="isEditingPassword">
-              <form [formGroup]="passwordForm" class="profile-form">
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Current Password</mat-label>
-                  <mat-icon matPrefix>lock</mat-icon>
-                  <input matInput type="password" formControlName="currentPassword">
-                </mat-form-field>
-    
+              <form [formGroup]="passwordForm" class="profile-form">    
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-label>New Password</mat-label>
                   <mat-icon matPrefix>lock_open</mat-icon>

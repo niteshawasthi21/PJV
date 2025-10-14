@@ -76,32 +76,7 @@ export class UserProfileComponent implements OnInit {
   ];
 
   // Saved Addresses
-  addresses: Address[] = [
-    {
-      id: 1,
-      type: 'Home',
-      name: 'Rajesh Kumar',
-      phone: '+91 9876543210',
-      addressLine1: 'A-123, Green Park Society',
-      addressLine2: 'Near City Mall',
-      city: 'Varanasi',
-      state: 'Uttar Pradesh',
-      pincode: '221001',
-      isDefault: true
-    },
-    {
-      id: 2,
-      type: 'Office',
-      name: 'Rajesh Kumar',
-      phone: '+91 9876543210',
-      addressLine1: 'B-456, Tech Park',
-      addressLine2: 'Sector 5',
-      city: 'Varanasi',
-      state: 'Uttar Pradesh',
-      pincode: '221010',
-      isDefault: false
-    }
-  ];
+  addresses: Address[] = [];
 
   // Wishlist Items
   wishlistItems = [
@@ -127,6 +102,7 @@ export class UserProfileComponent implements OnInit {
       inStock: false
     }
   ];
+  passwordResetToken='';
 
   constructor(
     private fb: FormBuilder,
@@ -142,20 +118,19 @@ export class UserProfileComponent implements OnInit {
     });
 
     this.passwordForm = this.fb.group({
-    //   currentPassword: ['', Validators.required],
-    //   newPassword: ['', [Validators.required, Validators.minLength(6)]],
-    //   confirmPassword: ['', Validators.required]
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required]
     }, { validators: this.passwordMatchValidator });
 
     this.addressForm = this.fb.group({
-    //   type: ['', Validators.required],
-    //   name: ['', Validators.required],
-    //   phone: ['', Validators.required],
-    //   addressLine1: ['', Validators.required],
-    //   addressLine2: [''],
-    //   city: ['', Validators.required],
-    //   state: ['', Validators.required],
-    //   pincode: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]]
+      type: ['', Validators.required],
+      name: ['', Validators.required],
+      phone: ['', Validators.required],
+      addressLine1: ['', Validators.required],
+      addressLine2: [''],
+      city: ['', Validators.required],
+      state: ['', Validators.required],
+      pincode: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]]
     });
   }
 
@@ -167,30 +142,30 @@ export class UserProfileComponent implements OnInit {
   private getUserProfile() {
     // Call API to fetch user profile and populate forms
     this.authService.getProfile().subscribe(profile => {
-      console.log(profile);
       this.user = profile.user;
       this.user.totalOrders = profile.totalOrders??24;
       this.user.totalSpent = profile.totalSpent??45680;
       this.user.joinDate = new Date(this.user.created_at); // convert string to Date
       this.profileImageUrl = profile.user.avatarUrl ?? this.profileImageUrl;
-      // this.profileForm.patchValue({
-      // name: this.user.name ?? '',
-      // email: this.user.email ?? '',
-      // phone: this.user.phone ?? '',
-      // joinDate:new Date('2024-01-15')
-      // });
+      this.addresses.push(...profile.user.addresses);
+      this.profileForm.patchValue({
+      name: this.user.name,
+      email: this.user.email,
+      phone: this.user.phone
     });
+    });
+   
   }
 
   passwordMatchValidator(form: FormGroup) {
-  //   const newPassword = form.get('newPassword');
-  //   const confirmPassword = form.get('confirmPassword');
+    const newPassword = form.get('newPassword');
+    const confirmPassword = form.get('confirmPassword');
     
-  //   if (newPassword && confirmPassword && newPassword.value !== confirmPassword.value) {
-  //     confirmPassword.setErrors({ passwordMismatch: true });
-  //     return { passwordMismatch: true };
-  //   }
-  //   return null;
+    if (newPassword && confirmPassword && newPassword.value !== confirmPassword.value) {
+      confirmPassword.setErrors({ passwordMismatch: true });
+      return { passwordMismatch: true };
+    }
+    return null;
   }
 
   // Profile Image Upload
@@ -223,71 +198,104 @@ export class UserProfileComponent implements OnInit {
 
   // Profile Edit
   enableProfileEdit() {
-    // this.isEditingProfile = true;
-    // this.profileForm.enable();
+    this.isEditingProfile = true;
+    this.profileForm.enable();
   }
 
   cancelProfileEdit() {
-  //   this.isEditingProfile = false;
-  //   this.profileForm.patchValue({
-  //     name: this.user.name,
-  //     email: this.user.email,
-  //     phone: this.user.phone
-  //   });
-  //   this.profileForm.disable();
+    this.isEditingProfile = false;
+    this.profileForm.patchValue({
+      name: this.user.name,
+      email: this.user.email,
+      phone: this.user.phone
+    });
+    this.profileForm.disable();
   }
 
   saveProfile() {
-  //   if (this.profileForm.valid) {
-  //     this.user = { ...this.user, ...this.profileForm.value };
-  //     this.isEditingProfile = false;
-  //     this.profileForm.disable();
-  //     this.showSnackBar('Profile updated successfully!');
-  //   }
+  if (this.profileForm.valid) {
+    this.authService.updateProfile(this.profileForm.value).subscribe({
+      next: (res) => {        
+          this.isEditingProfile = false;
+          this.profileForm.disable();
+          this.showSnackBar('Profile updated successfully!');
+          this.getUserProfile(); // Refresh user data
+      },
+      error: (err) => {
+        console.error('Profile update error:', err);
+        this.showSnackBar('Error occurred while updating profile');
+      }
+    });
   }
+}
+
 
   // // Password Change
-  enablePasswordChange() {
-  //   this.isEditingPassword = true;
+   enablePasswordChange() {
+  if (!this.user?.email) {
+    this.showSnackBar('Email not available.');
+    return;
   }
 
+  this.authService.changePassword(this.user.email).subscribe({
+    next: (res) => {
+      this.passwordResetToken=res.resetToken;
+      this.isEditingPassword = true;
+    },
+    error: (err) => {
+      console.error('Password reset error:', err);
+      this.showSnackBar('Error sending password reset link.');
+      this.isEditingPassword = false; // Optional: revert state if applicable
+    }
+  });
+}
+
+
+
   cancelPasswordChange() {
-  //   this.isEditingPassword = false;
-  //   this.passwordForm.reset();
+    this.isEditingPassword = false;
+    this.passwordForm.reset();
   }
 
   changePassword() {
-  //   if (this.passwordForm.valid) {
-  //     // API call to change password
-  //     this.showSnackBar('Password changed successfully!');
-  //     this.isEditingPassword = false;
-  //     this.passwordForm.reset();
-  //   }
+    if (this.passwordForm.valid) {
+      // API call to change password
+      this.authService.updatePassword(this.passwordResetToken,this.passwordForm.value.newPassword).subscribe({
+        next: (res) => {
+          this.showSnackBar('Password changed successfully!');
+          this.isEditingPassword = false;
+          this.passwordForm.reset();
+        }
+      });
+    }
   }
 
   // // Address Management
   addNewAddress() {
-  //   this.isAddingAddress = true;
-  //   this.addressForm.reset();
+    this.isAddingAddress = true;
+    
   }
 
   cancelAddAddress() {
-  //   this.isAddingAddress = false;
-  //   this.addressForm.reset();
+    this.isAddingAddress = false;
+    this.addressForm.reset();
   }
 
   saveAddress() {
-  //   if (this.addressForm.valid) {
-  //     const newAddress: Address = {
-  //       id: this.addresses.length + 1,
-  //       ...this.addressForm.value,
-  //       isDefault: false
-  //     };
-  //     this.addresses.push(newAddress);
-  //     this.isAddingAddress = false;
-  //     this.addressForm.reset();
-  //     this.showSnackBar('Address added successfully!');
-  //   }
+    if (this.addressForm.valid) {
+      this.authService.updateOrAddAddress(this.addressForm.value).subscribe({
+        next: (res) => {
+          this.addresses.push(res);
+          this.isAddingAddress = false;
+          this.addressForm.reset();
+          this.showSnackBar('Address added successfully!');
+        },
+        error: (err) => {
+          console.error('Error adding address:', err);
+          this.showSnackBar('Error occurred while adding address');
+        }
+      });
+    }
   }
 
   setDefaultAddress(address: Address) {

@@ -105,4 +105,39 @@ export class AuthService {
 
     return this.http.post(`${this.baseUrl}/avatar`, formData);
   }
+
+  // Request password reset email
+  changePassword(email:string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/forgot-password`, {email});
+  }
+
+  // Reset password using token
+  updatePassword(token:string, newPassword:string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/reset-password`, { token, newPassword });
+  }
+
+  // Update user profile
+  updateProfile(data: any): Observable<any> {
+    const updatePayload = {
+      name: data.name,
+      email: data.email,
+      phone: data.phone
+    };
+    return this.http.put(`${this.baseUrl}/update-profile`, updatePayload).pipe(
+      tap((response: any) => {
+        if (response.user) {
+          localStorage.setItem('user', JSON.stringify(response.user));
+        }
+      })
+    );
+  }
+
+  // Update or add user address
+  updateOrAddAddress(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/user-address`, data);
+  }
+  // updateOrAddAddress(addressId: number, data: any): Observable<any> {
+  //   return this.http.put(`${this.baseUrl}/user-address/${addressId}`, data);
+  // }
+
 }

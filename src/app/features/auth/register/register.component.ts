@@ -26,11 +26,15 @@ export class RegisterComponent {
     );
   }
 
-   passwordMatchValidator(formGroup: FormGroup): ValidationErrors | null {
-    const password = formGroup.get('password')?.value;
-    const confirmPassword = formGroup.get('confirmPassword')?.value;
-    if (!password || !confirmPassword) return null;
-    return password === confirmPassword ? null : { passwordMismatch: true };
+   passwordMatchValidator(form: FormGroup) {
+    const newPassword = form.get('password');
+    const confirmPassword = form.get('confirmPassword');
+    
+    if (newPassword && confirmPassword && newPassword.value !== confirmPassword.value) {
+      confirmPassword.setErrors({ passwordMismatch: true });
+      return { passwordMismatch: true };
+    }
+    return null;
   }
 
   onSubmit() {
