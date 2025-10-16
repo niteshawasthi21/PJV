@@ -1,23 +1,30 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AngularMaterialComponentsModule } from '../../material/material-components.module';
-import { Subscription } from 'rxjs';
-import { AuthService } from '../../../core/services/auth/auth.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth/auth.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [CommonModule, AngularMaterialComponentsModule],
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit, OnDestroy {
-  cartItemCount = 5;
-  wishlistCount = 3;
-  isLoggedIn = false;
-  userName = '';
-  private authSubscription!: Subscription;
+export class HeaderComponent {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
+  // Reactive signals
+  isLoggedIn = toSignal(this.authService.isAuthenticated$, { initialValue: false });
+
+  user = computed(() => this.authService.getCurrentUser());
+  userName = computed(() => this.user()?.name ?? 'User');
+  userAvatar = signal(this.user()?.avatar ?? '');
+
+  cartItemCount = signal(5);
+  wishlistCount = signal(3);
 
   categories = [
     { name: 'Home', route: '/', icon: 'home' },
@@ -26,38 +33,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
     { name: 'Kids', route: '/kids', icon: 'child_care' },
     { name: 'Accessories', route: '/accessories', icon: 'watch' },
     { name: 'Sale', route: '/sale', icon: 'local_offer' },
-    { name: 'New Arrivals', route: '/new', icon: 'new_releases' }
+    { name: 'New Arrivals', route: '/new', icon: 'new_releases' },
   ];
-  userAvatar='';
-
-  constructor(private authService: AuthService,
-    private router: Router
-  ) {}
-
-  ngOnInit(): void {
-    // Subscribe to auth state
-    this.authSubscription = this.authService.isAuthenticated$.subscribe(isAuth => {
-      this.isLoggedIn = isAuth;
-      if (isAuth) {
-        const user = this.authService.getCurrentUser();
-        this.userName = user?.name || 'User';
-        this.userAvatar = user?.avatar || '';
-      } else {
-        this.userName = '';
-      }
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.authSubscription?.unsubscribe();
-  }
 
   onSearch() {
-    console.log('Searching for:');
+    console.log('Searching...');
   }
 
   navigateTo(route: string) {
-    console.log('Navigating to:', route);
+    this.router.navigate([route]);
   }
 
   logout() {
@@ -67,11 +51,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   goToProfile() {
     this.router.navigate(['/profile']);
-    console.log('Going to profile');
   }
 
   goToCart() {
-    console.log('Going to cart');
+    this.router.navigate(['/cart']);
   }
 
+  onAvatarError() {
+    this.userAvatar.set('/PJV.png');
+  }
 }

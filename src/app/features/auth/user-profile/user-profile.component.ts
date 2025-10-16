@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from '../../../core/services/dialog/notification.service';
 import { AngularMaterialComponentsModule } from '../../../shared/material/material-components.module';
 import { AuthService } from '../../../core/services/auth/auth.service';
-import { catchError, map, of, tap } from 'rxjs';
+import { catchError, firstValueFrom, map, of, tap } from 'rxjs';
 
 @Component({
   selector: 'app-user-profile',
@@ -14,10 +14,10 @@ import { catchError, map, of, tap } from 'rxjs';
 })
 export class UserProfileComponent implements OnInit {
 
-  profileForm: FormGroup;
-  passwordForm: FormGroup;
-  addressForm: FormGroup;
-  
+  profileForm!: FormGroup;
+  passwordForm!: FormGroup;
+  addressForm!: FormGroup;
+
   isEditingProfile = false;
   isEditingPassword = false;
   isAddingAddress = false;
@@ -102,7 +102,7 @@ export class UserProfileComponent implements OnInit {
       inStock: false
     }
   ];
-  passwordResetToken='';
+  passwordResetToken = '';
 
   constructor(
     private fb: FormBuilder,
@@ -110,11 +110,20 @@ export class UserProfileComponent implements OnInit {
     private dialog: MatDialog,
     private authService: AuthService
   ) {
+    this.initForms();
+  }
+
+  ngOnInit(): void {
+    this.profileForm.disable();
+    this.getUserProfile();
+  }
+
+  private initForms(): void {
     this.profileForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
-      joinDate:['']
+      joinDate: ['']
     });
 
     this.passwordForm = this.fb.group({
@@ -134,33 +143,40 @@ export class UserProfileComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.profileForm.disable();
-    this.getUserProfile();
-  }
+private async getUserProfile(): Promise<void> {
+  try {
+    const profile = await firstValueFrom(this.authService.getProfile());
+    const { user, totalOrders, totalSpent } = profile;
 
-  private getUserProfile() {
-    // Call API to fetch user profile and populate forms
-    this.authService.getProfile().subscribe(profile => {
-      this.user = profile.user;
-      this.user.totalOrders = profile.totalOrders??24;
-      this.user.totalSpent = profile.totalSpent??45680;
-      this.user.joinDate = new Date(this.user.created_at); // convert string to Date
-      this.profileImageUrl = profile.user.avatarUrl ?? this.profileImageUrl;
-      this.addresses.push(...profile.user.addresses);
-      this.profileForm.patchValue({
-      name: this.user.name,
-      email: this.user.email,
-      phone: this.user.phone
+    if (!user) return;
+
+    this.user = {
+      ...user,
+      totalOrders: totalOrders ?? 24,
+      totalSpent: totalSpent ?? 45680,
+      joinDate: new Date(user.created_at)
+    };
+
+    this.profileImageUrl = user.avatarUrl ?? this.profileImageUrl;
+
+    if (Array.isArray(user.addresses)) {
+      this.addresses = [...user.addresses];
+    }
+
+    this.profileForm.patchValue({
+      name: user.name,
+      email: user.email,
+      phone: user.phone
     });
-    });
-   
+  } catch (error) {
+    this.notify.show('Failed to load profile', 'error');
   }
+}
 
   passwordMatchValidator(form: FormGroup) {
     const newPassword = form.get('newPassword');
     const confirmPassword = form.get('confirmPassword');
-    
+
     if (newPassword && confirmPassword && newPassword.value !== confirmPassword.value) {
       confirmPassword.setErrors({ passwordMismatch: true });
       return { passwordMismatch: true };
@@ -169,27 +185,36 @@ export class UserProfileComponent implements OnInit {
   }
 
   // Profile Image Upload
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-      this.authService.uploadAvatar(file, this.user.id).pipe(
-        tap((response) => {
-          console.log('Avatar uploaded successfully:', response);
-        }),
-        catchError((error) => {
-          console.error('Error uploading avatar:', error);
-          return of(null);
-        })
-      ).subscribe();
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.profileImageUrl = e.target.result;
-      };
-      reader.readAsDataURL(file);
-      this.showSnackBar('Profile picture updated!');
-    }
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input?.files?.[0];
 
+    if (!file) return;
+
+    this.selectedFile = file;
+    this.previewImage(file);
+    this.uploadAvatar(file);
+  }
+
+  private previewImage(file: File): void {
+    const reader = new FileReader();
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      this.profileImageUrl = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  private uploadAvatar(file: File): void {
+    this.authService.uploadAvatar(file, this.user.id).pipe(
+      tap(response => {
+        console.log('Avatar uploaded successfully:', response);
+        this.notify.show('Profile image updated successfully!', 'success');
+      }),
+      catchError(error => {
+        this.notify.show('Error uploading profile image', 'error');
+        return of(null);
+      })
+    ).subscribe();
   }
 
   triggerFileInput() {
@@ -213,42 +238,42 @@ export class UserProfileComponent implements OnInit {
   }
 
   saveProfile() {
-  if (this.profileForm.valid) {
-    this.authService.updateProfile(this.profileForm.value).subscribe({
-      next: (res) => {        
+    if (this.profileForm.valid) {
+      this.authService.updateProfile(this.profileForm.value).subscribe({
+        next: (res) => {
           this.isEditingProfile = false;
           this.profileForm.disable();
           this.showSnackBar('Profile updated successfully!');
           this.getUserProfile(); // Refresh user data
-      },
-      error: (err) => {
-        console.error('Profile update error:', err);
-        this.showSnackBar('Error occurred while updating profile');
-      }
-    });
+        },
+        error: (err) => {
+          console.error('Profile update error:', err);
+          this.showSnackBar('Error occurred while updating profile');
+        }
+      });
+    }
   }
-}
 
 
   // // Password Change
-   enablePasswordChange() {
-  if (!this.user?.email) {
-    this.showSnackBar('Email not available.');
-    return;
-  }
-
-  this.authService.changePassword(this.user.email).subscribe({
-    next: (res) => {
-      this.passwordResetToken=res.resetToken;
-      this.isEditingPassword = true;
-    },
-    error: (err) => {
-      console.error('Password reset error:', err);
-      this.showSnackBar('Error sending password reset link.');
-      this.isEditingPassword = false; // Optional: revert state if applicable
+  enablePasswordChange() {
+    if (!this.user?.email) {
+      this.showSnackBar('Email not available.');
+      return;
     }
-  });
-}
+
+    this.authService.changePassword(this.user.email).subscribe({
+      next: (res) => {
+        this.passwordResetToken = res.resetToken;
+        this.isEditingPassword = true;
+      },
+      error: (err) => {
+        console.error('Password reset error:', err);
+        this.showSnackBar('Error sending password reset link.');
+        this.isEditingPassword = false; // Optional: revert state if applicable
+      }
+    });
+  }
 
 
 
@@ -260,7 +285,7 @@ export class UserProfileComponent implements OnInit {
   changePassword() {
     if (this.passwordForm.valid) {
       // API call to change password
-      this.authService.updatePassword(this.passwordResetToken,this.passwordForm.value.newPassword).subscribe({
+      this.authService.updatePassword(this.passwordResetToken, this.passwordForm.value.newPassword).subscribe({
         next: (res) => {
           this.showSnackBar('Password changed successfully!');
           this.isEditingPassword = false;
@@ -273,7 +298,7 @@ export class UserProfileComponent implements OnInit {
   // // Address Management
   addNewAddress() {
     this.isAddingAddress = true;
-    
+
   }
 
   cancelAddAddress() {
@@ -299,52 +324,44 @@ export class UserProfileComponent implements OnInit {
   }
 
   setDefaultAddress(address: Address) {
-  //   this.addresses.forEach(addr => addr.isDefault = false);
-  //   address.isDefault = true;
-  //   this.showSnackBar('Default address updated!');
+    //   this.addresses.forEach(addr => addr.isDefault = false);
+    //   address.isDefault = true;
+    //   this.showSnackBar('Default address updated!');
   }
 
   deleteAddress(addressId: number) {
-  //   this.addresses = this.addresses.filter(addr => addr.id !== addressId);
-  //   this.showSnackBar('Address deleted successfully!');
+    //   this.addresses = this.addresses.filter(addr => addr.id !== addressId);
+    //   this.showSnackBar('Address deleted successfully!');
   }
+getStatusColor(status: string): string {
+  return OrderStatusColor[status as keyof typeof OrderStatusColor] ?? 'basic';
+}
 
   // // Order Management
   viewOrder(order: Order) {
-  //   console.log('Viewing order:', order);
-  //   // Navigate to order details page
+    //   console.log('Viewing order:', order);
+    //   // Navigate to order details page
   }
 
   trackOrder(order: Order) {
-  //   console.log('Tracking order:', order);
-  //   // Open tracking dialog or navigate to tracking page
+    //   console.log('Tracking order:', order);
+    //   // Open tracking dialog or navigate to tracking page
   }
 
   downloadInvoice(order: Order) {
-  //   console.log('Downloading invoice for:', order);
-  //   this.showSnackBar('Invoice downloaded!');
-  }
-
-  getStatusColor(status: string): string {
-  //   const colors: { [key: string]: string } = {
-  //     'Delivered': 'primary',
-  //     'Shipped': 'accent',
-  //     'Processing': 'warn',
-  //     'Cancelled': 'basic'
-  //   };
-  //   return colors[status] || 'basic';
-  return ''
+    //   console.log('Downloading invoice for:', order);
+    //   this.showSnackBar('Invoice downloaded!');
   }
 
   // // Wishlist Management
   removeFromWishlist(itemId: number) {
-  //   this.wishlistItems = this.wishlistItems.filter(item => item.id !== itemId);
-  //   this.showSnackBar('Removed from wishlist!');
+    //   this.wishlistItems = this.wishlistItems.filter(item => item.id !== itemId);
+    //   this.showSnackBar('Removed from wishlist!');
   }
 
   moveToCart(item: any) {
-  //   console.log('Moving to cart:', item);
-  //   this.showSnackBar('Item added to cart!');
+    //   console.log('Moving to cart:', item);
+    //   this.showSnackBar('Item added to cart!');
   }
 
   // // Utility
@@ -374,4 +391,13 @@ export interface Address {
   state: string;
   pincode: string;
   isDefault: boolean;
+}
+
+
+
+  enum OrderStatusColor {
+  Delivered = 'primary',
+  Shipped = 'accent',
+  Processing = 'warn',
+  Cancelled = 'basic'
 }

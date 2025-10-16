@@ -1,0 +1,20 @@
+<div class="fallback-wrapper">
+  <mat-card class="fallback-card" appearance="outlined">
+    <div class="fallback-illustration">
+        <img src="/PJV.png" alt="Fallback Illustration" class="illustration-svg" />
+    </div>
+
+    <h2>{{ isOffline() ? 'You’re Offline' : 'Page Not Found' }}</h2>
+
+    <p>
+      {{ isOffline()
+        ? 'Please check your internet connection and try again.'
+        : 'We can’t seem to find the page you’re looking for.' }}
+    </p>
+
+    <button mat-flat-button color="accent" (click)="retry()">
+      <mat-icon>refresh</mat-icon>
+      Try Again
+    </button>
+  </mat-card>
+</div>

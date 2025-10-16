@@ -1,137 +1,118 @@
-// Angular Material header styles
-// Custom theme color
 $theme-orange: #ed913b;
 
-
 .header-toolbar {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0 1.5rem;
-	min-height: 68px;
-	background: $theme-orange !important;
-	box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  min-height: 68px;
+  background: $theme-orange !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
 
-	.header-logo img {
-		height: 44px;
-        border-radius: 2em;
-		width: auto;
-		vertical-align: middle;
-		filter: drop-shadow(0 2px 4px rgba(0,0,0,0.08));
-	}
+  .header-logo img {
+    height: 44px;
+    border-radius: 2em;
+    width: auto;
+    vertical-align: middle;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.08));
+  }
 
-.user-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid white;
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+  }
+
+  .avatar-button {
+    padding: 0;
+  }
+
+  .cart-badge {
+    position: absolute;
+    top: 0;
+    left: 24px;
+    background: white;
+    color: $theme-orange;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    font-weight: 600;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+	z-index: 1;
+  }
+
+  .header-icons {
+    display: flex;
+    align-items: center;
+	gap:10px;
+
+    button[mat-icon-button] {
+      background: #fff;
+      color: $theme-orange;
+      margin-left: 0.5rem;
+      border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+      transition: background 0.2s;
+	  margin: 0;
+
+      &:hover {
+        background: lighten($theme-orange, 30%);
+      }
+
+      mat-icon {
+        color: $theme-orange;
+      }
+    }
+
+    button[mat-stroked-button],
+    button[mat-flat-button] {
+      border-radius: 20px;
+      font-weight: 500;
+      font-size: 0.97rem;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+      margin-right: 0.5rem;
+      background: #fff;
+      color: $theme-orange;
+      border-color: $theme-orange;
+	  margin: 0;
+
+      &:hover {
+        background: lighten($theme-orange, 30%);
+      }
+    }
+
+    button[mat-flat-button] {
+      background: $theme-orange;
+      color: #fff;
+      border: none;
+    }
+  }
 }
 
-.avatar-button {
-  padding: 0;
-}
-
-
-	.header-icons {
-		display: flex;
-		align-items: center;
-		button[mat-icon-button] {
-			background: #fff;
-			color: $theme-orange;
-			margin-left: 0.5rem;
-			border-radius: 50%;
-			box-shadow: 0 1px 4px rgba(0,0,0,0.07);
-			transition: background 0.2s;
-			&:hover {
-				background: lighten($theme-orange, 30%);
-			}
-			mat-icon {
-				color: $theme-orange;
-			}
-		}
-		.me-2 {
-			margin-right: 0.5rem !important;
-		}
-		button[mat-stroked-button], button[mat-flat-button] {
-			border-radius: 20px;
-			font-weight: 500;
-			font-size: 0.97rem;
-			box-shadow: 0 1px 4px rgba(0,0,0,0.07);
-			margin-right: 0.5rem;
-			background: #fff;
-			color: $theme-orange;
-			border-color: $theme-orange;
-			&:hover {
-				background: lighten($theme-orange, 30%);
-			}
-		}
-		button[mat-flat-button] {
-			background: $theme-orange;
-			color: #fff;
-			border: none;
-		}
-	}
-}
-
-// Tablet view
+/* Tablet view */
 @media (max-width: 900px) {
-	.header-toolbar {
-		.header-search {
-			margin: 0 0.5rem;
-			max-width: 300px;
-		}
-	}
+  .header-toolbar {
+    padding: 0 1rem;
+  }
 }
 
-// Mobile view
+/* Mobile view */
 @media (max-width: 600px) {
-	.header-toolbar {
-		flex-direction: column;
-		align-items: stretch;
-		padding: 0.5rem;
-		.header-logo {
-			justify-content: center;
-			margin-bottom: 0.5rem;
-			text-align: center;
-		}
-		.header-search {
-			margin: 0 0 0.5rem 0;
-			max-width: 100%;
-		}
-		.header-icons {
-			justify-content: flex-end;
-		}
-	}
-}
+  .header-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0.5rem;
 
-// Tablet view
-@media (max-width: 900px) {
-	.header-toolbar {
-		.header-search {
-			margin: 0 0.5rem;
-			max-width: 300px;
-		}
-	}
-}
+    .header-logo {
+      justify-content: center;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
 
-// Mobile view
-@media (max-width: 600px) {
-	.header-toolbar {
-		flex-direction: column;
-		align-items: stretch;
-		padding: 0.5rem;
-		.header-logo {
-			justify-content: center;
-			margin-bottom: 0.5rem;
-			text-align: center;
-		}
-		.header-search {
-			margin: 0 0 0.5rem 0;
-			max-width: 100%;
-		}
-		.header-icons {
-			justify-content: flex-end;
-		}
-	}
+    .header-icons {
+      justify-content: flex-end;
+    }
+  }
 }

@@ -1,329 +1,328 @@
 <div class="profile-container">
-  
-    <!-- Profile Header -->
-    <div class="profile-header">
-      <mat-card class="header-card">
-        <div class="header-content">
-          <div class="profile-avatar-section">
-            <div class="avatar-wrapper">
-              <img [src]="profileImageUrl" alt="Profile Picture" class="profile-avatar">
-              <button mat-mini-fab color="primary" class="edit-avatar-btn" (click)="triggerFileInput()">
-                <mat-icon>camera_alt</mat-icon>
-              </button>
-              <input type="file" id="fileInput" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
-            </div>
-          </div>
-          <div class="profile-info">
-            <h1>{{ user.name }}</h1>
-            <p class="email">{{ user.email }}</p>
-            <p class="join-date">
-              <mat-icon>event</mat-icon>
-              Member since {{ user.joinDate | date }}
-            </p>
-          </div>
-          <div class="profile-stats">
-            <div class="stat-item">
-              <h3>{{ user.totalOrders }}</h3>
-              <p>Total Orders</p>
-            </div>
-            <mat-divider [vertical]="true"></mat-divider>
-            <div class="stat-item">
-              <h3>₹{{ user.totalSpent | number }}</h3>
-              <p>Total Spent</p>
-            </div>
+
+  <!-- Profile Header -->
+  <div class="profile-header">
+    <mat-card class="header-card">
+      <div class="header-content">
+        <div class="profile-avatar-section">
+          <div class="avatar-wrapper">
+            <img [src]="profileImageUrl" alt="Profile Picture" class="profile-avatar" aria-label="User profile picture">
+            <button mat-mini-fab color="primary" class="edit-avatar-btn" (click)="triggerFileInput()"
+              aria-label="Edit profile picture">
+              <mat-icon>camera_alt</mat-icon>
+            </button>
+            <input type="file" id="fileInput" accept="image/*" (change)="onFileSelected($event)" style="display: none;">
           </div>
         </div>
-      </mat-card>
-    </div>
-  
-    <!-- Tabs Section -->
-   @if(true){
-    <mat-tab-group  class="profile-tabs" animationDuration="300ms">
-      
-        <!-- Personal Information Tab -->
-        <mat-tab>
-          <ng-template mat-tab-label>
-            <mat-icon>person</mat-icon>
-            Personal Info
-          </ng-template>
-          
-          <mat-card class="tab-card">
-            <mat-card-header>
-              <mat-card-title>Personal Information</mat-card-title>
-              <button mat-raised-button color="primary" *ngIf="!isEditingProfile" (click)="enableProfileEdit()">
-                <mat-icon>edit</mat-icon>
-                Edit Profile
-              </button>
-            </mat-card-header>
-            <mat-card-content>
-              <form [formGroup]="profileForm" class="profile-form">
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Full Name</mat-label>
-                  <mat-icon matPrefix>person</mat-icon>
-                  <input matInput formControlName="name">
-                </mat-form-field>
-    
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Email Address</mat-label>
-                  <mat-icon matPrefix>email</mat-icon>
-                  <input matInput type="email" formControlName="email">
-                  <mat-error *ngIf="profileForm.get('email')?.hasError('email')">
-                    Please enter a valid email
-                  </mat-error>
-                </mat-form-field>
-    
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Phone Number</mat-label>
-                  <mat-icon matPrefix>phone</mat-icon>
-                  <input matInput formControlName="phone">
-                </mat-form-field>
-    
-                <div class="form-actions" *ngIf="isEditingProfile">
-                  <button mat-raised-button (click)="cancelProfileEdit()">Cancel</button>
-                  <button mat-raised-button color="primary" (click)="saveProfile()">Save Changes</button>
-                </div>
-              </form>
-            </mat-card-content>
-          </mat-card>
-    
-          <!-- Change Password Section -->
-          <mat-card class="tab-card">
-            <mat-card-header>
-              <mat-card-title>Change Password</mat-card-title>
-              <button mat-raised-button color="primary" *ngIf="!isEditingPassword" (click)="enablePasswordChange()">
-                <mat-icon>lock</mat-icon>
-                Change Password
-              </button>
-            </mat-card-header>
-            <mat-card-content *ngIf="isEditingPassword">
-              <form [formGroup]="passwordForm" class="profile-form">    
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>New Password</mat-label>
-                  <mat-icon matPrefix>lock_open</mat-icon>
-                  <input matInput type="password" formControlName="newPassword">
-                  <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">
-                    Password must be at least 6 characters
-                  </mat-error>
-                </mat-form-field>
-    
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Confirm New Password</mat-label>
-                  <mat-icon matPrefix>lock_open</mat-icon>
-                  <input matInput type="password" formControlName="confirmPassword">
-                  <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('passwordMismatch')">
-                    Passwords do not match
-                  </mat-error>
-                </mat-form-field>
-    
-                <div class="form-actions">
-                  <button mat-raised-button (click)="cancelPasswordChange()">Cancel</button>
-                  <button mat-raised-button color="primary" (click)="changePassword()">Update Password</button>
-                </div>
-              </form>
-            </mat-card-content>
-          </mat-card>
-        </mat-tab>
-    
-        <!-- Orders Tab -->
-        <mat-tab>
-          <ng-template mat-tab-label>
-            <mat-icon>shopping_bag</mat-icon>
-            My Orders
-          </ng-template>
-          
-          <mat-card class="tab-card">
-            <mat-card-header>
-              <mat-card-title>Order History</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="orders-list">
-                <mat-card class="order-card" *ngFor="let order of orders">
-                  <div class="order-header">
-                    <div class="order-info">
-                      <h3>{{ order.id }}</h3>
-                      <p class="order-date">
-                        <mat-icon>event</mat-icon>
-                        {{ order.date | date:'dd MMM yyyy' }}
-                      </p>
-                    </div>
-                    <mat-chip [color]="getStatusColor(order.status)" selected>
-                      {{ order.status }}
-                    </mat-chip>
-                  </div>
-                  <mat-divider></mat-divider>
-                  <div class="order-details">
-                    <div class="order-summary">
-                      <p><strong>Items:</strong> {{ order.items }}</p>
-                      <p><strong>Total:</strong> ₹{{ order.total }}</p>
-                    </div>
-                    <div class="order-actions">
-                      <button mat-button color="primary" (click)="viewOrder(order)">
-                        <mat-icon>visibility</mat-icon>
-                        View Details
-                      </button>
-                      <button mat-button (click)="trackOrder(order)" *ngIf="order.status !== 'Delivered'">
-                        <mat-icon>location_on</mat-icon>
-                        Track
-                      </button>
-                      <button mat-button (click)="downloadInvoice(order)">
-                        <mat-icon>download</mat-icon>
-                        Invoice
-                      </button>
-                    </div>
-                  </div>
-                </mat-card>
-              </div>
-            </mat-card-content>
-          </mat-card>
-        </mat-tab>
-    
-        <!-- Addresses Tab -->
-        <mat-tab>
-          <ng-template mat-tab-label>
-            <mat-icon>location_on</mat-icon>
-            Addresses
-          </ng-template>
-          
-          <mat-card class="tab-card">
-            <mat-card-header>
-              <mat-card-title>Saved Addresses</mat-card-title>
-              <button mat-raised-button color="primary" (click)="addNewAddress()" *ngIf="!isAddingAddress">
-                <mat-icon>add</mat-icon>
-                Add New Address
-              </button>
-            </mat-card-header>
-            <mat-card-content>
-              
-              <!-- Add New Address Form -->
-              <mat-card class="address-form-card" *ngIf="isAddingAddress">
-                <mat-card-title>New Address</mat-card-title>
-                <form [formGroup]="addressForm" class="address-form">
-                  <mat-form-field appearance="outline">
-                    <mat-label>Address Type</mat-label>
-                    <input matInput formControlName="type" placeholder="Home, Office, etc.">
-                  </mat-form-field>
-    
-                  <mat-form-field appearance="outline">
-                    <mat-label>Full Name</mat-label>
-                    <input matInput formControlName="name">
-                  </mat-form-field>
-    
-                  <mat-form-field appearance="outline">
-                    <mat-label>Phone Number</mat-label>
-                    <input matInput formControlName="phone">
-                  </mat-form-field>
-    
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Address Line 1</mat-label>
-                    <input matInput formControlName="addressLine1">
-                  </mat-form-field>
-    
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Address Line 2</mat-label>
-                    <input matInput formControlName="addressLine2">
-                  </mat-form-field>
-    
-                  <mat-form-field appearance="outline">
-                    <mat-label>City</mat-label>
-                    <input matInput formControlName="city">
-                  </mat-form-field>
-    
-                  <mat-form-field appearance="outline">
-                    <mat-label>State</mat-label>
-                    <input matInput formControlName="state">
-                  </mat-form-field>
-    
-                  <mat-form-field appearance="outline">
-                    <mat-label>Pincode</mat-label>
-                    <input matInput formControlName="pincode" maxlength="6">
-                    <mat-error *ngIf="addressForm.get('pincode')?.hasError('pattern')">
-                      Invalid pincode
-                    </mat-error>
-                  </mat-form-field>
-    
-                  <div class="form-actions full-width">
-                    <button mat-raised-button (click)="cancelAddAddress()">Cancel</button>
-                    <button mat-raised-button color="primary" (click)="saveAddress()">Save Address</button>
-                  </div>
-                </form>
-              </mat-card>
-    
-              <!-- Address List -->
-              <div class="addresses-grid">
-                <mat-card class="address-card" *ngFor="let address of addresses">
-                  <mat-chip *ngIf="address.isDefault" class="default-badge" color="primary" selected>
-                    Default
-                  </mat-chip>
-                  <h3>
-                    <mat-icon>{{ address.type === 'Home' ? 'home' : 'business' }}</mat-icon>
-                    {{ address.type }}
-                  </h3>
-                  <p class="address-name">{{ address.name }}</p>
-                  <p>{{ address.addressLine1 }}</p>
-                  <p *ngIf="address.addressLine2">{{ address.addressLine2 }}</p>
-                  <p>{{ address.city }}, {{ address.state }} - {{ address.pincode }}</p>
-                  <p class="address-phone">
-                    <mat-icon>phone</mat-icon>
-                    {{ address.phone }}
-                  </p>
-                  <mat-divider></mat-divider>
-                  <div class="address-actions">
-                    <button mat-button color="primary" (click)="setDefaultAddress(address)" *ngIf="!address.isDefault">
-                      Set as Default
-                    </button>
-                    <button mat-button>
-                      <mat-icon>edit</mat-icon>
-                      Edit
-                    </button>
-                    <button mat-button color="warn" (click)="deleteAddress(address.id)">
-                      <mat-icon>delete</mat-icon>
-                      Delete
-                    </button>
-                  </div>
-                </mat-card>
-              </div>
-            </mat-card-content>
-          </mat-card>
-        </mat-tab>
-    
-        <!-- Wishlist Tab -->
-        <mat-tab>
-          <ng-template mat-tab-label>
-            <mat-icon>favorite</mat-icon>
-            Wishlist
-          </ng-template>
-          
-          <mat-card class="tab-card">
-            <mat-card-header>
-              <mat-card-title>My Wishlist</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="wishlist-grid">
-                <mat-card class="wishlist-card" *ngFor="let item of wishlistItems">
-                  <button mat-icon-button class="remove-btn" (click)="removeFromWishlist(item.id)">
-                    <mat-icon>close</mat-icon>
-                  </button>
-                  <img [src]="item.image" [alt]="item.name">
-                  <mat-card-content>
-                    <h3>{{ item.name }}</h3>
-                    <p class="price">₹{{ item.price }}</p>
-                    <p class="stock-status" [class.out-of-stock]="!item.inStock">
-                      {{ item.inStock ? 'In Stock' : 'Out of Stock' }}
-                    </p>
-                    <button mat-raised-button color="primary" class="full-width" 
-                            [disabled]="!item.inStock"
-                            (click)="moveToCart(item)">
-                      <mat-icon>shopping_cart</mat-icon>
-                      {{ item.inStock ? 'Add to Cart' : 'Notify Me' }}
-                    </button>
-                  </mat-card-content>
-                </mat-card>
-              </div>
-            </mat-card-content>
-          </mat-card>
-        </mat-tab>
-    
-      </mat-tab-group>
-   }
-  
+        <div class="profile-info">
+          <h1>{{ user.name }}</h1>
+          <p class="email">{{ user.email }}</p>
+          <p class="join-date">
+            <mat-icon>event</mat-icon>
+            Member since {{ user.joinDate | date }}
+          </p>
+        </div>
+        <section class="profile-stats">
+          <div class="stat-item">
+            <h3>{{ user.totalOrders }}</h3>
+            <p>Total Orders</p>
+          </div>
+          <mat-divider [vertical]="true"></mat-divider>
+          <div class="stat-item">
+            <h3>₹{{ user.totalSpent | number }}</h3>
+            <p>Total Spent</p>
+          </div>
+        </section>
+      </div>
+    </mat-card>
   </div>
+
+  <!-- Tabs Section -->
+
+  <mat-tab-group class="profile-tabs" animationDuration="300ms">
+
+    <!-- Personal Information Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>person</mat-icon>
+        Personal Info
+      </ng-template>
+
+      <mat-card class="tab-card">
+        <mat-card-header>
+          <mat-card-title>Personal Information</mat-card-title>
+          <button mat-raised-button color="primary" *ngIf="!isEditingProfile" (click)="enableProfileEdit()">
+            <mat-icon>edit</mat-icon>
+            Edit Profile
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="profileForm" class="profile-form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Full Name</mat-label>
+              <mat-icon matPrefix>person</mat-icon>
+              <input matInput formControlName="name">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Email Address</mat-label>
+              <mat-icon matPrefix>email</mat-icon>
+              <input matInput type="email" formControlName="email">
+              <mat-error *ngIf="profileForm.get('email')?.hasError('email')">
+                Please enter a valid email
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Phone Number</mat-label>
+              <mat-icon matPrefix>phone</mat-icon>
+              <input matInput formControlName="phone">
+            </mat-form-field>
+
+            <div class="form-actions" *ngIf="isEditingProfile">
+              <button mat-raised-button (click)="cancelProfileEdit()">Cancel</button>
+              <button mat-raised-button color="primary" (click)="saveProfile()">Save Changes</button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Change Password Section -->
+      <mat-card class="tab-card">
+        <mat-card-header>
+          <mat-card-title>Change Password</mat-card-title>
+          <button mat-raised-button color="primary" *ngIf="!isEditingPassword" (click)="enablePasswordChange()">
+            <mat-icon>lock</mat-icon>
+            Change Password
+          </button>
+        </mat-card-header>
+        <mat-card-content *ngIf="isEditingPassword">
+          <form [formGroup]="passwordForm" class="profile-form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>New Password</mat-label>
+              <mat-icon matPrefix>lock_open</mat-icon>
+              <input matInput type="password" formControlName="newPassword">
+              <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">
+                Password must be at least 6 characters
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Confirm New Password</mat-label>
+              <mat-icon matPrefix>lock_open</mat-icon>
+              <input matInput type="password" formControlName="confirmPassword">
+              <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('passwordMismatch')">
+                Passwords do not match
+              </mat-error>
+            </mat-form-field>
+
+            <div class="form-actions">
+              <button mat-raised-button (click)="cancelPasswordChange()">Cancel</button>
+              <button mat-raised-button color="primary" (click)="changePassword()">Update Password</button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+
+    <!-- Orders Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>shopping_bag</mat-icon>
+        My Orders
+      </ng-template>
+
+      <mat-card class="tab-card">
+        <mat-card-header>
+          <mat-card-title>Order History</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="orders-list">
+            <mat-card class="order-card" *ngFor="let order of orders">
+              <div class="order-header">
+                <div class="order-info">
+                  <h3>{{ order.id }}</h3>
+                  <p class="order-date">
+                    <mat-icon>event</mat-icon>
+                    {{ order.date | date:'dd MMM yyyy' }}
+                  </p>
+                </div>
+                <mat-chip [color]="getStatusColor(order.status)" selected>
+                  {{ order.status }}
+                </mat-chip>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="order-details">
+                <div class="order-summary">
+                  <p><strong>Items:</strong> {{ order.items }}</p>
+                  <p><strong>Total:</strong> ₹{{ order.total }}</p>
+                </div>
+                <div class="order-actions">
+                  <button mat-button color="primary" (click)="viewOrder(order)">
+                    <mat-icon>visibility</mat-icon>
+                    View Details
+                  </button>
+                  <button mat-button (click)="trackOrder(order)" *ngIf="order.status !== 'Delivered'">
+                    <mat-icon>location_on</mat-icon>
+                    Track
+                  </button>
+                  <button mat-button (click)="downloadInvoice(order)">
+                    <mat-icon>download</mat-icon>
+                    Invoice
+                  </button>
+                </div>
+              </div>
+            </mat-card>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+
+    <!-- Addresses Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>location_on</mat-icon>
+        Addresses
+      </ng-template>
+
+      <mat-card class="tab-card">
+        <mat-card-header>
+          <mat-card-title>Saved Addresses</mat-card-title>
+          <button mat-raised-button color="primary" (click)="addNewAddress()" *ngIf="!isAddingAddress">
+            <mat-icon>add</mat-icon>
+            Add New Address
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+
+          <!-- Add New Address Form -->
+          <mat-card class="address-form-card" *ngIf="isAddingAddress">
+            <mat-card-title>New Address</mat-card-title>
+            <form [formGroup]="addressForm" class="address-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Address Type</mat-label>
+                <input matInput formControlName="type" placeholder="Home, Office, etc.">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Full Name</mat-label>
+                <input matInput formControlName="name">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Phone Number</mat-label>
+                <input matInput formControlName="phone">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Address Line 1</mat-label>
+                <input matInput formControlName="addressLine1">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Address Line 2</mat-label>
+                <input matInput formControlName="addressLine2">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>City</mat-label>
+                <input matInput formControlName="city">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>State</mat-label>
+                <input matInput formControlName="state">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Pincode</mat-label>
+                <input matInput formControlName="pincode" maxlength="6">
+                <mat-error *ngIf="addressForm.get('pincode')?.hasError('pattern')">
+                  Invalid pincode
+                </mat-error>
+              </mat-form-field>
+
+              <div class="form-actions full-width">
+                <button mat-raised-button (click)="cancelAddAddress()">Cancel</button>
+                <button mat-raised-button color="primary" (click)="saveAddress()">Save Address</button>
+              </div>
+            </form>
+          </mat-card>
+
+          <!-- Address List -->
+          <div class="addresses-grid">
+            <mat-card class="address-card" *ngFor="let address of addresses">
+              <mat-chip *ngIf="address.isDefault" class="default-badge" color="primary" selected>
+                Default
+              </mat-chip>
+              <h3>
+                <mat-icon>{{ address.type === 'Home' ? 'home' : 'business' }}</mat-icon>
+                {{ address.type }}
+              </h3>
+              <p class="address-name">{{ address.name }}</p>
+              <p>{{ address.addressLine1 }}</p>
+              <p *ngIf="address.addressLine2">{{ address.addressLine2 }}</p>
+              <p>{{ address.city }}, {{ address.state }} - {{ address.pincode }}</p>
+              <p class="address-phone">
+                <mat-icon>phone</mat-icon>
+                {{ address.phone }}
+              </p>
+              <mat-divider></mat-divider>
+              <div class="address-actions">
+                <button mat-button color="primary" (click)="setDefaultAddress(address)" *ngIf="!address.isDefault">
+                  Set as Default
+                </button>
+                <button mat-button>
+                  <mat-icon>edit</mat-icon>
+                  Edit
+                </button>
+                <button mat-button color="warn" (click)="deleteAddress(address.id)">
+                  <mat-icon>delete</mat-icon>
+                  Delete
+                </button>
+              </div>
+            </mat-card>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+
+    <!-- Wishlist Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>favorite</mat-icon>
+        Wishlist
+      </ng-template>
+
+      <mat-card class="tab-card">
+        <mat-card-header>
+          <mat-card-title>My Wishlist</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="wishlist-grid">
+            <mat-card class="wishlist-card" *ngFor="let item of wishlistItems">
+              <button mat-icon-button class="remove-btn" (click)="removeFromWishlist(item.id)">
+                <mat-icon>close</mat-icon>
+              </button>
+              <img [src]="item.image" [alt]="item.name">
+              <mat-card-content>
+                <h3>{{ item.name }}</h3>
+                <p class="price">₹{{ item.price }}</p>
+                <p class="stock-status" [class.out-of-stock]="!item.inStock">
+                  {{ item.inStock ? 'In Stock' : 'Out of Stock' }}
+                </p>
+                <button mat-raised-button color="primary" class="full-width" [disabled]="!item.inStock"
+                  (click)="moveToCart(item)">
+                  <mat-icon>shopping_cart</mat-icon>
+                  {{ item.inStock ? 'Add to Cart' : 'Notify Me' }}
+                </button>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+
+  </mat-tab-group>
+
+</div>

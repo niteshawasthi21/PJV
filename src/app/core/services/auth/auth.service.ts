@@ -1,12 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { ForgotPasswordPayload, LoginPayload, RegisterPayload, ResetPasswordPayload } from '../../models/auth';
-import { tap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
+import {
+  ForgotPasswordPayload,
+  LoginPayload,
+  RegisterPayload,
+  ResetPasswordPayload
+} from '../../models/auth';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   private baseUrl = 'http://localhost:3000/api/auth';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
@@ -15,26 +18,22 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   // ----------------------------
-  // Register a new user
+  // Auth Actions
   // ----------------------------
+
   register(payload: RegisterPayload): Observable<any> {
-    const registerPayload = {
+    return this.http.post(`${this.baseUrl}/register`, {
       name: payload.fullName,
       email: payload.email,
       password: payload.password
-    };
-    return this.http.post(`${this.baseUrl}/register`, registerPayload);
+    });
   }
 
-  // ----------------------------
-  // Login
-  // ----------------------------
   login(payload: LoginPayload): Observable<any> {
-    const loginPayload = {
+    return this.http.post(`${this.baseUrl}/login`, {
       email: payload.email,
       password: payload.password
-    };
-    return this.http.post(`${this.baseUrl}/login`, loginPayload).pipe(
+    }).pipe(
       tap((response: any) => {
         if (response.token && response.user) {
           this.setAuthData(response.token, response.user);
@@ -44,86 +43,34 @@ export class AuthService {
     );
   }
 
-  // ----------------------------
-  // Forgot Password
-  // ----------------------------
-  forgotPassword(payload: ForgotPasswordPayload): Observable<any> {
-    return this.http.post(`${this.baseUrl}/forgot-password`, payload);
-  }
-
-  // ----------------------------
-  // Reset Password
-  // ----------------------------
-  resetPassword(payload: ResetPasswordPayload): Observable<any> {
-    return this.http.post(`${this.baseUrl}/reset-password`, payload);
-  }
-
-  // ----------------------------
-  // Authentication State Management
-  // ----------------------------
-  
-  // Check if user is logged in
-  isLoggedIn(): boolean {
-    const token = localStorage.getItem('authToken');
-    const user = localStorage.getItem('user');
-    return !!(token && user);
-  }
-
-  // Set authentication data
-  private setAuthData(token: string, user: any): void {
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('user', JSON.stringify(user));
-  }
-
-  // Get current user
-  getCurrentUser(): any {
-    const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr) : null;
-  }
-
-  // Get auth token
-  getToken(): string | null {
-    return localStorage.getItem('authToken');
-  }
-
-  // Logout
   logout(): void {
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
     this.isAuthenticatedSubject.next(false);
   }
 
-  //get profile
+  // ----------------------------
+  // Password Management
+  // ----------------------------
+
+  changePassword(email: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/forgot-password`, { email });
+  }
+
+  updatePassword(token: string, newPassword: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}/reset-password`, { token, newPassword });
+  }
+
+  // ----------------------------
+  // Profile & User Data
+  // ----------------------------
+
   getProfile(): Observable<any> {
     return this.http.get(`${this.baseUrl}/profile`);
   }
 
-  // Upload Avatar
-  uploadAvatar(file: File, userId: number): Observable<any> {
-  const formData = new FormData();
-  formData.append('avatar', file);
-
-    return this.http.post(`${this.baseUrl}/avatar`, formData);
-  }
-
-  // Request password reset email
-  changePassword(email:string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/forgot-password`, {email});
-  }
-
-  // Reset password using token
-  updatePassword(token:string, newPassword:string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/reset-password`, { token, newPassword });
-  }
-
-  // Update user profile
-  updateProfile(data: any): Observable<any> {
-    const updatePayload = {
-      name: data.name,
-      email: data.email,
-      phone: data.phone
-    };
-    return this.http.put(`${this.baseUrl}/update-profile`, updatePayload).pipe(
+  updateProfile(data: { name: string; email: string; phone: string }): Observable<any> {
+    return this.http.put(`${this.baseUrl}/update-profile`, data).pipe(
       tap((response: any) => {
         if (response.user) {
           localStorage.setItem('user', JSON.stringify(response.user));
@@ -132,12 +79,35 @@ export class AuthService {
     );
   }
 
-  // Update or add user address
+  uploadAvatar(file: File, userId: number): Observable<any> {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    return this.http.post(`${this.baseUrl}/avatar`, formData);
+  }
+
   updateOrAddAddress(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/user-address`, data);
   }
-  // updateOrAddAddress(addressId: number, data: any): Observable<any> {
-  //   return this.http.put(`${this.baseUrl}/user-address/${addressId}`, data);
-  // }
 
+  // ----------------------------
+  // Local Auth State
+  // ----------------------------
+
+  isLoggedIn(): boolean {
+    return !!(localStorage.getItem('authToken') && localStorage.getItem('user'));
+  }
+
+  getCurrentUser(): any {
+    const userStr = localStorage.getItem('user');
+    return userStr ? JSON.parse(userStr) : null;
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('authToken');
+  }
+
+  private setAuthData(token: string, user: any): void {
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('user', JSON.stringify(user));
+  }
 }
